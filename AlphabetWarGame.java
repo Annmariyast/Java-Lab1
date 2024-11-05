@@ -1,109 +1,102 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Scanner;
 
 public class AlphabetWarGame {
-    private Map<Character, Integer> leftSideStrengths;
-    private Map<Character, Integer> rightSideStrengths;
+    private int w, p, b, s;
+    private int m, q, d, z;
 
-    // Constructor with default strengths
     public AlphabetWarGame() {
-        this.leftSideStrengths = new HashMap<>();
-        this.rightSideStrengths = new HashMap<>();
-        
-        // Default strengths for left side letters
-        leftSideStrengths.put('w', 4);
-        leftSideStrengths.put('p', 3);
-        leftSideStrengths.put('b', 2);
-        leftSideStrengths.put('s', 1);
-
-        // Default strengths for right side letters
-        rightSideStrengths.put('m', 4);
-        rightSideStrengths.put('q', 3);
-        rightSideStrengths.put('d', 2);
-        rightSideStrengths.put('z', 1);
+        this.w = 4;
+        this.p = 3;
+        this.b = 2;
+        this.s = 1;
+        this.m = 4;
+        this.q = 3;
+        this.d = 2;
+        this.z = 1;
     }
 
-    // Constructor with custom strengths
-    public AlphabetWarGame(Map<Character, Integer> customLeftSide, Map<Character, Integer> customRightSide) {
-        this.leftSideStrengths = customLeftSide;
-        this.rightSideStrengths = customRightSide;
-    }
+    public void playGame(String input) {
+        int leftStrength = 0;
+        int rightStrength = 0;
 
-    // Method to fight with a single word
-    public String fight(String word) {
-        int leftSideScore = 0;
-        int rightSideScore = 0;
+        // Validate input to contain only valid characters
+        if (!input.matches("[mqdzwpbs]+")) {
+            System.out.println("Invalid input. Please enter only the characters m, q, d, z, w, p, b, s.");
+            return;
+        }
 
-        // Calculate total score for each side
-        for (char c : word.toCharArray()) {
-            if (leftSideStrengths.containsKey(c)) {
-                leftSideScore += leftSideStrengths.get(c);
-            } else if (rightSideStrengths.containsKey(c)) {
-                rightSideScore += rightSideStrengths.get(c);
+        for (char c : input.toCharArray()) {
+            switch (c) {
+                case 'm': leftStrength += m; break;
+                case 'q': leftStrength += q; break;
+                case 'd': leftStrength += d; break;
+                case 'z': leftStrength += z; break;
+                case 'w': rightStrength += w; break;
+                case 'p': rightStrength += p; break;
+                case 'b': rightStrength += b; break;
+                case 's': rightStrength += s; break;
             }
         }
 
-        return determineWinner(leftSideScore, rightSideScore);
-    }
-
-    // Method to fight with separate left-side and right-side words
-    public String fight(String leftWord, String rightWord) {
-        int leftSideScore = 0;
-        int rightSideScore = 0;
-
-        // Calculate score for the left side word
-        for (char c : leftWord.toCharArray()) {
-            if (leftSideStrengths.containsKey(c)) {
-                leftSideScore += leftSideStrengths.get(c);
-            }
+        if (leftStrength == 0 && rightStrength == 0) {
+            System.out.println("Let's play again! No valid letters found.");
+            return;
         }
 
-        // Calculate score for the right side word
-        for (char c : rightWord.toCharArray()) {
-            if (rightSideStrengths.containsKey(c)) {
-                rightSideScore += rightSideStrengths.get(c);
-            }
-        }
-
-        return determineWinner(leftSideScore, rightSideScore);
+        determineWinner(leftStrength, rightStrength);
     }
 
-    // Helper method to determine the winner
-    private String determineWinner(int leftScore, int rightScore) {
-        if (leftScore > rightScore) {
-            return "Left side wins!";
-        } else if (rightScore > leftScore) {
-            return "Right side wins!";
+    public void playGame(String leftSide, String rightSide) {
+        int leftStrength = calculateLeftStrength(leftSide);
+        int rightStrength = calculateRightStrength(rightSide);
+        determineWinner(leftStrength, rightStrength);
+    }
+
+    private int calculateLeftStrength(String leftSide) {
+        int strength = 0;
+        for (char c : leftSide.toCharArray()) {
+            switch (c) {
+                case 'm': strength += m; break;
+                case 'q': strength += q; break;
+                case 'd': strength += d; break;
+                case 'z': strength += z; break;
+            }
+        }
+        return strength;
+    }
+
+    private int calculateRightStrength(String rightSide) {
+        int strength = 0;
+        for (char c : rightSide.toCharArray()) {
+            switch (c) {
+                case 'w': strength += w; break;
+                case 'p': strength += p; break;
+                case 'b': strength += b; break;
+                case 's': strength += s; break;
+            }
+        }
+        return strength;
+    }
+
+    private void determineWinner(int leftStrength, int rightStrength) {
+        if (leftStrength > rightStrength) {
+            System.out.println("Left side wins");
+        } else if (rightStrength > leftStrength) {
+            System.out.println("Right side wins");
         } else {
-            return "Let's fight again!";
+            System.out.println("It's a tie! Both sides have equal strength.");
         }
     }
 
-    // Main method for testing
     public static void main(String[] args) {
-        // Create a default game
+        Scanner scanner = new Scanner(System.in);
         AlphabetWarGame game = new AlphabetWarGame();
 
-        // Test cases with default strengths
-        System.out.println(game.fight("z"));            // Right side wins!
-        System.out.println(game.fight("zdqmwpbs"));     // Let's fight again!
-        System.out.println(game.fight("wwwwwwz"));      // Left side wins!
-
-        // Custom strengths (optional)
-        Map<Character, Integer> customLeft = new HashMap<>();
-        customLeft.put('w', 5);  // Custom strength
-        customLeft.put('p', 3);
-        customLeft.put('b', 2);
-        customLeft.put('s', 1);
-
-        Map<Character, Integer> customRight = new HashMap<>();
-        customRight.put('m', 4);
-        customRight.put('q', 3);
-        customRight.put('d', 2);
-        customRight.put('z', 2);  // Custom strength
-
-        // Create a game with custom strengths
-        AlphabetWarGame customGame = new AlphabetWarGame(customLeft, customRight);
-        System.out.println(customGame.fight("zdqmwpbs"));  // Test with custom strengths
+        // Keep playing until valid input
+        while (true) {
+            System.out.println("Enter a string for Alphabet War Game:");
+            String input = scanner.nextLine().toLowerCase();
+            game.playGame(input);
+        }
     }
 }
